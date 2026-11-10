@@ -1,28 +1,26 @@
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  Text,
-  Pressable,
-} from "react-native";
+import { View, StyleSheet, TextInput, Text, Pressable } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { playSound } from "../../services/soundHandler";
 import { useState, useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, useStore } from "react-redux";
 import { wordsLearningActions } from "../../store/wordsLearningSlice";
 import ImagePicker from "../../components/ImagePicker";
+import { updateWord } from "../../store/dbUtils";
 
 function EditWord({ route, navigation }) {
   const [wordData, setWordData] = useState(() => route.params.wordData);
   const colors = useSelector((state) => state.theme.colors);
   const styles = useMemo(() => getStyles(colors), [colors]);
   const dispatch = useDispatch();
+  const store = useStore();
 
   function onSave() {
     dispatch(wordsLearningActions.updateWord(wordData));
-    navigation.navigate(
-      "AllWords"
-    );
+    const saved = store
+      .getState()
+      .wordsLearning.words.find((w) => w.word === word);
+    if (saved) updateWord(saved);
+    navigation.navigate("AllWords");
   }
 
   function onChangeWordData(text, propName) {

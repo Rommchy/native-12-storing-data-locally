@@ -7,13 +7,13 @@ import {
   Pressable,
 } from "react-native";
 import { useState, useEffect, useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, useStore } from "react-redux";
 import { wordsLearningActions } from "../../store/wordsLearningSlice";
-
 import { getWordInfo } from "../../services/wordsHandler";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { playSound } from "../../services/soundHandler";
 import ImagePicker from "../../components/ImagePicker";
+import { addWord } from "../../store/dbUtils";
 
 function AddWord({ navigation }) {
   const [text, setText] = useState();
@@ -21,6 +21,7 @@ function AddWord({ navigation }) {
   const colors = useSelector((state) => state.theme.colors);
   const styles = useMemo(() => getStyles(colors), [colors]);
   const dispatch = useDispatch();
+  const store = useStore();
 
   function onChangeText(text) {
     setWordData(undefined);
@@ -45,7 +46,14 @@ function AddWord({ navigation }) {
   }, [navigation, wordData]);
 
   function onAdd() {
+    if (!wordData?.word) return;
     dispatch(wordsLearningActions.addWord(wordData));
+
+    const saved = store
+      .getState()
+      .wordsLearning.words.find((w) => w.word === wordData.word);
+    if (saved) addWord(saved);
+
     navigation.navigate("AllWords");
   }
 

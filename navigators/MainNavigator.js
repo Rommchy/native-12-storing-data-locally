@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useStore } from "react-redux";
 
 import { useDispatch } from "react-redux";
 import WordsNavigation from "./WordsNavigation";
@@ -13,6 +13,7 @@ import { StatusBar } from "react-native";
 import { wordsLearningActions } from "../store/wordsLearningSlice";
 import { themeActions } from "../store/themeSlice";
 import { REFRESH_STATUSES_SPAN } from "../constants";
+import { updateWord } from "../store/dbUtils";
 
 const Tab = createBottomTabNavigator();
 
@@ -20,13 +21,14 @@ function MainNavigator() {
   const colors = useSelector((state) => state.theme.colors);
   const isDark = useSelector((state) => state.theme.isDark);
 
+  const store = useStore();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const interval = setInterval(
-      () => dispatch(wordsLearningActions.updateStatuses()),
-      REFRESH_STATUSES_SPAN
-    );
+    const interval = setInterval(() => {
+      dispatch(wordsLearningActions.updateStatuses());
+      store.getState().wordsLearning.words.forEach((w) => updateWord(w));
+    }, REFRESH_STATUSES_SPAN);
     return () => clearInterval(interval);
   }, []);
 

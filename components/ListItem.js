@@ -13,6 +13,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { wordsLearningActions } from "../store/wordsLearningSlice";
 import { playSound } from "../services/soundHandler";
+import { deleteWord } from "../store/dbUtils";
 
 function Item({ item }) {
   const navigation = useNavigation();
@@ -69,7 +70,10 @@ function Item({ item }) {
       </Pressable>
       <Pressable
         style={styles.iconContainer}
-        onPress={() => dispatch(wordsLearningActions.removeWord(item.word))}
+        onPress={() => {
+          dispatch(wordsLearningActions.removeWord(item.word));
+          deleteWord(word);
+        }}
       >
         <Ionicons name="trash-outline" size={22} color={colors.secondary800} />
       </Pressable>

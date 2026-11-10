@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useMemo } from "react";
 
 import { themeActions } from "../store/themeSlice";
+import { setTheme } from "../store/dbUtils";
 
 function Settings() {
   const dispatch = useDispatch();
@@ -20,7 +21,10 @@ function Settings() {
           trackColor={{ false: colors.grey300, true: colors.primary300 }}
           thumbColor={colors.primary900}
           ios_backgroundColor={colors.primary200}
-          onValueChange={() => dispatch(themeActions.toggle())}
+          onValueChange={(value) => {
+            dispatch(themeActions.toggle());
+            setTheme(value);
+          }}
           value={isDark}
           style={{ transform: [{ scaleX: 2 }, { scaleY: 2 }] }}
         />
